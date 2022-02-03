@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: simple-app
+  namespace: argocd
+spec:
+  project: default
+  # this sync policy will deploy the app when changes are detected
+  syncPolicy:
+    automated: {}
+  source:
+    repoURL: https://github.com/vmware-tanzu/carvel-simple-app-on-kubernetes.git
+    targetRevision: develop
+    path: config-step-2-template
+
+    # plugin config
+    plugin:
+      name: carvel-ytt
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

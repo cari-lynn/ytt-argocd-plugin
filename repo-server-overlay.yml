@@ -1,0 +1,28 @@
+#@ load("@ytt:overlay", "overlay")
+#@overlay/match by=overlay.subset({"kind":"Deployment", "metadata":{"name":"argocd-repo-server"}}), expects=1
+---
+spec:
+  template:
+    spec:
+      #! 1. Define an emptyDir volume which will hold the custom binaries
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+      #! 2. Use an init container to download/copy custom binaries into the emptyDir
+      initContainers:
+        - name: download-carvel-tools
+          image: index.docker.io/k14s/image@sha256:6ab29951e0207fde6760f6db227f218f20e875f45b22e8ca0ee06c0c8cab32cd
+          command: [sh, -c]
+          args:
+            - cp /usr/local/bin/ytt /custom-tools/ytt
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      #! 3. Volume mount the custom binary to the bin directory (overriding the existing version)
+      containers:
+        #@overlay/match by=overlay.subset({"name": "argocd-repo-server"}), expects=1
+        - name: argocd-repo-server
+          volumeMounts:
+            - mountPath: /usr/local/bin/ytt
+              name: custom-tools
+              subPath: ytt
