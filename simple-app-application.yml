@@ -19,3 +19,19 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: default
+---
+# this manually creates the default namespace
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+  namespace: argocd
+spec:
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
