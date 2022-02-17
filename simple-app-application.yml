@@ -1,3 +1,4 @@
+# simple-app-application.yml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,7 +6,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  # this sync policy will deploy the app when changes are detected
+  # this sync policy will deploy the app without confirmation when changes are detected
   syncPolicy:
     automated: {}
   source:
@@ -20,7 +21,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: default
 ---
-# this manually creates the default namespace
+# this manually creates the default project
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
